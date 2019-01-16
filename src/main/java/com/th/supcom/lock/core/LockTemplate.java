@@ -35,6 +35,7 @@ public class LockTemplate
             acquireCount++;
             if (result)
             {
+                log.info ("lock success, at times:{} ", acquireCount);
                 return new DistLockInfo (key, lockValue, expire, timeout, acquireCount,new Date());
             }
             Thread.sleep (50);

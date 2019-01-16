@@ -44,7 +44,7 @@ public class UserService {
         //模拟锁占用
         System.out.println("开始--执行spel方法2 , 当前线程:" + Thread.currentThread().getName());
         try {
-            Thread.sleep(10*1000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
