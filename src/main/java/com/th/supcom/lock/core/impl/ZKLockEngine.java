@@ -6,6 +6,11 @@ import com.th.supcom.lock.core.ILockEngine;
  
 
 /**
+ * <p>
+ * D:\runtime\zookeeper-3.4.5\bin\启动.cmd 
+ * 这是本地安装的zookeeper服务,客户端使用D:\runtime\zookeeper-3.4.5\bin\zktools\zktools.exe
+ * 
+ * </p>
  * 
  * @function 锁引擎-Zookeeper实现 
  * @date 2019年1月16日 下午2:49:24
