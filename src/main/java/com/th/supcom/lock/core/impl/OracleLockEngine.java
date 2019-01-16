@@ -19,7 +19,7 @@ public class OracleLockEngine implements ILockEngine
     
 
     @Override
-    public boolean acquire (String lockKey, String lockValue, long acquireExpire)
+    public boolean acquire (DistLockInfo lockInfo)
     {
         return false;
     }

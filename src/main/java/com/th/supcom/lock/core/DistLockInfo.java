@@ -1,8 +1,11 @@
 
 package com.th.supcom.lock.core;
 
+import java.util.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 
@@ -13,6 +16,7 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class DistLockInfo
 {
 
@@ -40,4 +44,8 @@ public class DistLockInfo
      * 尝试获取锁次数
      */
     private int acquireCount = 0;
+    /**
+     *创建时间
+     */
+    private Date createDate;
 }

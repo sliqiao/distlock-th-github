@@ -2,11 +2,14 @@
 
 package com.th.supcom.lock.core;
 
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Date;
+
 import org.springframework.util.Assert;
 
 import com.th.supcom.lock.util.LockUtil;
+
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LockTemplate
 {
@@ -22,15 +25,17 @@ public class LockTemplate
         Assert.isTrue (timeout > 0, "tryTimeout must more than 0");
         long start = System.currentTimeMillis ();
         int acquireCount = 0;
-        String value = PROCESS_ID + DEFAULT_DELIMITER + Thread.currentThread ().getId ();
-
+        String lockValue = PROCESS_ID + DEFAULT_DELIMITER + Thread.currentThread ().getId ();
+        DistLockInfo lockInfo=new DistLockInfo (key, lockValue, expire, timeout, acquireCount,null);
         while (System.currentTimeMillis () - start < timeout)
         {
-            boolean result = lockExecutor.acquire (key, value, expire);
+            lockInfo.setAcquireCount (acquireCount);
+            lockInfo.setCreateDate (new Date());
+            boolean result = lockExecutor.acquire (lockInfo);
             acquireCount++;
             if (result)
             {
-                return new DistLockInfo (key, value, expire, timeout, acquireCount);
+                return new DistLockInfo (key, lockValue, expire, timeout, acquireCount,new Date());
             }
             Thread.sleep (50);
         }

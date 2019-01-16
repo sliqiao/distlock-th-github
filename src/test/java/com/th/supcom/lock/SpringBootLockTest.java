@@ -8,7 +8,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -18,6 +21,7 @@ import com.th.supcom.lock.service.UserService;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SpringBootLockTest.class)
 @SpringBootApplication
+@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
 public class SpringBootLockTest {
 
     private static final Random RANDOM = new Random();
@@ -44,7 +48,7 @@ public class SpringBootLockTest {
         for (int i = 0; i < 1; i++) {
             executorService.submit(task);
         }
-        Thread.sleep(10000);
+        System.in.read ();
     }
     
     @Test
@@ -62,7 +66,7 @@ public class SpringBootLockTest {
         for (int i = 0; i < 100; i++) {
             executorService.submit(task);
         }
-        Thread.sleep(10000);
+        System.in.read ();
     }
 
     @Test
@@ -80,7 +84,7 @@ public class SpringBootLockTest {
         for (int i = 0; i < 100; i++) {
             executorService.submit(task);
         }
-        Thread.sleep(3000);
+        System.in.read ();
     }
 
     @Test
@@ -98,7 +102,7 @@ public class SpringBootLockTest {
         for (int i = 0; i < 100; i++) {
             executorService.submit(task);
         }
-        Thread.sleep(3000);
+        System.in.read ();
     }
 
     @Test

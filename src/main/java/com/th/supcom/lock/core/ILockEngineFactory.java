@@ -49,6 +49,11 @@ public class ILockEngineFactory
         return null;
     }
 
+    public ILockEngine getDefaultInstance ()
+    {
+        return mysqlLockEngine;
+    }
+
     public static enum ILockEngineType
     {
      Redis, Mysql, Oracle, Zookeeper;

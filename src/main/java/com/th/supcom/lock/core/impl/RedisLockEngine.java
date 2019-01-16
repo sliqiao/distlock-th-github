@@ -35,8 +35,11 @@ public class RedisLockEngine implements ILockEngine
     private RedisTemplate <String, ? > redisTemplate;
 
     @Override
-    public boolean acquire (String lockKey, String lockValue, long acquireExpire)
+    public boolean acquire (DistLockInfo lockInfo)
     {
+        String lockKey= lockInfo.getLockKey ();
+        String lockValue=lockInfo.getLockValue ();
+        long acquireExpire=lockInfo.getExpire ();
         Object lockResult = redisTemplate.execute (SCRIPT_LOCK, stringSerializer, stringSerializer,
                                                    Collections.singletonList (lockKey), lockValue,
                                                    String.valueOf (acquireExpire));

@@ -42,6 +42,6 @@ public @interface DistLock
      *     结合业务,建议该时间不宜设置过长,特别在并发高的情况下.
      * </pre>
      */
-    long timeout() default 10 * 1000;
+    long timeout() default 50 * 1000;
 
 }

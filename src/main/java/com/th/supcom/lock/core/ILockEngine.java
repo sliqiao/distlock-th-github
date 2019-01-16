@@ -15,7 +15,7 @@ public interface ILockEngine {
      * @throws Exception
      * @return 锁信息
      */
-    boolean acquire(String lockKey, String lockValue,long acquireExpire);
+    boolean acquire(DistLockInfo lockInfo);
 
     /**
      * 解锁
