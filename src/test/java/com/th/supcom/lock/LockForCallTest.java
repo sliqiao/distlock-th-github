@@ -117,7 +117,7 @@ public class LockForCallTest {
                 }
             }
         };
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 2; i++) {
             executorService.submit(task);
         }
          System.in.read ();

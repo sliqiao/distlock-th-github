@@ -82,11 +82,13 @@ public class UserServiceForCall
 
     public User method2 (User user)
     {
-        System.out.println ("开始--执行method2 , 当前线程:" + Thread.currentThread ().getName ());
+     
         IDistLock distLock = DistLockInfo.newLock (user.getId ()+"");
         try
         {
+            
             distLock.lock ();
+            System.out.println ("开始--执行method2 , 当前线程:" + Thread.currentThread ().getName ());
             Thread.sleep (1000*20);
         }
         catch (InterruptedException e)
@@ -95,9 +97,10 @@ public class UserServiceForCall
         }
         finally
         {
+            System.out.println ("结束--执行method2 , 当前线程:" + Thread.currentThread ().getName ());
             distLock.unlock ();
         }
-        System.out.println ("结束--执行method2 , 当前线程:" + Thread.currentThread ().getName ());
+       
         return user;
     }
 

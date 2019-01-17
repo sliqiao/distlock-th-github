@@ -20,7 +20,7 @@ public class LockTemplate
     @Setter
     private ILockEngine lockExecutor;
 
-    public DistLockInfo lock (String key, long expire, long timeout) throws Exception
+    public DistLockInfo lock (String key, long expire, long timeout) 
     {
         Assert.isTrue (timeout > 0, "tryTimeout must more than 0");
         long start = System.currentTimeMillis ();
@@ -32,15 +32,22 @@ public class LockTemplate
             lockInfo.setAcquireCount (acquireCount);
             lockInfo.setCreateDate (new Date());
             boolean result = lockExecutor.acquire (lockInfo);
-            acquireCount++;
             if (result)
             {
-                log.info ("lock success, at times:{} ", acquireCount);
+                log.info ("lock success, at times:{} ,subject:{}", acquireCount,lockValue);
                 return new DistLockInfo (key, lockValue, expire, timeout, acquireCount,new Date());
             }
-            Thread.sleep (50);
+            acquireCount++;
+            try
+            {
+                Thread.sleep (50);
+            }
+            catch (InterruptedException e)
+            {
+              log.error ("执行LockTemplate.lock()方法异常：",e);
+            }
         }
-        log.info ("lock failed, try {} times", acquireCount);
+        log.info ("lock failed, try {} times,subject:{}", acquireCount,lockValue);
         return null;
     }
 

@@ -53,13 +53,12 @@ public class DistLockInfo implements IDistLock
     private Date createDate;
 
     @Override
-    public boolean lock (Long expire, Long acquireTimeout)
+    public boolean lock (Long expire, Long timeout)
     {
         this.setExpire (expire);
-        this.setAcquireTimeout (acquireTimeout);
-        ILockEngineFactory lockEngineFactory = SpringContextUtil.getBean (ILockEngineFactory.class);
-        ILockEngine lockEngine = lockEngineFactory.getDefaultInstance ();
-        return lockEngine.acquire (this);
+        this.setAcquireTimeout (timeout);
+        LockTemplate  lockTemplate =SpringContextUtil.getBean (LockTemplate.class);
+        return  null!=lockTemplate.lock (this.getLockKey (), expire, timeout);
     }
 
     @Override
@@ -72,9 +71,8 @@ public class DistLockInfo implements IDistLock
     @Override
     public boolean unlock ()
     {
-        ILockEngineFactory lockEngineFactory = SpringContextUtil.getBean (ILockEngineFactory.class);
-        ILockEngine lockEngine = lockEngineFactory.getDefaultInstance ();
-        return lockEngine.releaseLock (this);
+        LockTemplate  lockTemplate =SpringContextUtil.getBean (LockTemplate.class);
+        return lockTemplate.releaseLock (this);
 
     }
 

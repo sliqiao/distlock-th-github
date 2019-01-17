@@ -43,14 +43,17 @@ public class MysqlLockEngine implements ILockEngine
                                  lockInfo.getLockKey (), lockInfo.getLockValue (), lockInfo.getExpire (),
                                  lockInfo.getAcquireTimeout (), lockInfo.getAcquireCount (), lockInfo.getCreateDate ());
         }
-        catch (Exception e)
+        catch (org.springframework.dao.DuplicateKeyException e)
         {
 
-            if (e instanceof com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException)
-            {
-                log.error ("该锁已经被被其它主体占用，不可争抢到锁，请重试！锁：" + getPrimaryDistLockInfo (lockKey));
-                return false;
-            }
+            //log.error ("该锁已经被被其它主体占用，不可争抢到锁，请重试！");
+            return false;
+
+        }
+        catch (Exception e)
+        {
+            //log.error ("获取mysql锁异常!");
+            return false;
 
         }
         return true;
