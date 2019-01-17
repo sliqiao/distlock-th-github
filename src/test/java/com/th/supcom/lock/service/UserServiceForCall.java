@@ -10,6 +10,30 @@ import com.th.supcom.lock.model.User;
 public class UserServiceForCall
 {
 
+    public void simple11 ()
+    {
+   
+        IDistLock distLock = DistLockInfo.newLock ("simple1");
+        try
+        {
+            distLock.lock ();
+            System.out.println ("开始--执行simple11 , 当前线程:" + Thread.currentThread ().getName ());
+            this.simple1 ();
+            Thread.sleep (1000 * 10);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace ();
+        }
+        finally
+        {
+            System.out.println ("结束--执行simple11 , 当前线程:" + Thread.currentThread ().getName ());
+            distLock.unlock ();
+        }
+      
+
+    }
+ 
     public void simple1 ()
     {
    
@@ -17,12 +41,8 @@ public class UserServiceForCall
         try
         {
             distLock.lock ();
-            distLock.lock ();
-            distLock.lock ();
-            distLock.lock ();
-            distLock.lock ();
             System.out.println ("开始--执行simple1 , 当前线程:" + Thread.currentThread ().getName ());
-            Thread.sleep (1000 * 30);
+            Thread.sleep (1000 * 10);
         }
         catch (InterruptedException e)
         {
@@ -36,7 +56,7 @@ public class UserServiceForCall
       
 
     }
-
+   
     public void simple2 ()
     {
       

@@ -49,7 +49,23 @@ public class LockForCallTest {
         }
         System.in.read ();
     }
-    
+    @Test
+    public void recursionLockTest() throws Exception {
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        Runnable task = new Runnable() {
+            public void run() {
+                try {
+                    userService.simple11();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        for (int i = 0; i < 1; i++) {
+            executorService.submit(task);
+        }
+        System.in.read ();
+    }
     @Test
     public void simple1Test() throws Exception {
         ExecutorService executorService = Executors.newFixedThreadPool(10);

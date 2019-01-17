@@ -2,15 +2,16 @@ package com.th.supcom.lock.core.impl;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
+import org.apache.zookeeper.CreateMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.th.supcom.lock.core.DistLockInfo;
 import com.th.supcom.lock.core.ILockEngine;
+import com.th.supcom.lock.core.LockEngineHelper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,24 +40,28 @@ public class ZKLockEngine implements ILockEngine
     @Override
     public boolean acquire (DistLockInfo lockInfo)
     {
-        // 不是可重入锁，容易引起死锁
-        InterProcessMutex oldzkInterProcessMutex = lockInfo.getZkInterProcessMutex ();
-        if (oldzkInterProcessMutex != null && oldzkInterProcessMutex.isAcquiredInThisProcess ()
-            && oldzkInterProcessMutex.isOwnedByCurrentThread ())
+        // 不是可重入锁，容易引起死锁，此问题尚未解决
+        DistLockInfo primaryDistLockInfo = getPrimaryDistLockInfo (lockInfo.getLockKey ());
+        if (null != primaryDistLockInfo)
         {
-            log.warn ("该subject又过来获取这把可重入锁了，{}",lockInfo);
-            return true;
+            if (LockEngineHelper.isMySelf (lockInfo, primaryDistLockInfo))
+            {
+                log.warn ("该subject又过来获取这把可重入锁了，{}", lockInfo);
+                return true;
+            }
+            return false;
+
         }
-        String encodeZooKeeperPath = encodeZooKeeperPath (lockInfo);
-        InterProcessMutex zkInterProcessMutex = new InterProcessMutex (zkClient, encodeZooKeeperPath);
-        lockInfo.setZkInterProcessMutex (zkInterProcessMutex);
         try
         {
-            return zkInterProcessMutex.acquire (2000, TimeUnit.MILLISECONDS);
+            String encodeZooKeeperPath = encodeZooKeeperPath (lockInfo.getLockKey ());
+            zkClient.create ().creatingParentsIfNeeded ().withMode (CreateMode.EPHEMERAL)
+                    .forPath (encodeZooKeeperPath, lockInfo.getLockValue ().getBytes ());
+            return true;
         }
         catch (Exception e)
         {
-            log.error ("执行ZKLockEngine.acquire()异常", e);
+            log.error ("锁被其他subject争抢了:{}", lockInfo);
         }
 
         return false;
@@ -65,37 +70,58 @@ public class ZKLockEngine implements ILockEngine
     @Override
     public boolean releaseLock (DistLockInfo lockInfo)
     {
-        InterProcessMutex lock = lockInfo.getZkInterProcessMutex ();
-        if (null == lock)
+        DistLockInfo primaryDistLockInfo = getPrimaryDistLockInfo (lockInfo.getLockKey ());
+        String encodeZooKeeperPath = encodeZooKeeperPath (lockInfo.getLockKey ());
+        if (null == primaryDistLockInfo)
         {
-            return true;
+            return false;
         }
-        try
+
+        if (LockEngineHelper.isMySelf (lockInfo, primaryDistLockInfo))
         {
-            if (lock.isAcquiredInThisProcess () && lock.isOwnedByCurrentThread ())
+            try
             {
-                lock.release ();
-                lockInfo.setZkInterProcessMutex (null);
+                zkClient.delete ().forPath (encodeZooKeeperPath);
                 return true;
             }
-            log.error ("执行ZKLockEngine.releaseLock()失败，当前InterProcessMutex的owner不是当前线程！");
+            catch (Exception e)
+            {
+                log.error ("执行ZKLockEngine.releaseLock()异常", e);
+            }
+            return false;
+        }
+        return false;
 
+    }
+
+    @Override
+    public DistLockInfo getPrimaryDistLockInfo (String lockKey)
+    {
+        String encodeZooKeeperPath = encodeZooKeeperPath (lockKey);
+        DistLockInfo lockInfo = null;
+        try
+        {
+            byte[] lockValueByteArray = zkClient.getData ().forPath (encodeZooKeeperPath);
+            lockInfo = new DistLockInfo ();
+            lockInfo.setLockKey (lockKey);
+            lockInfo.setLockValue (new String (lockValueByteArray));
+            return lockInfo;
         }
         catch (Exception e)
         {
-            log.error ("执行ZKLockEngine.releaseLock()异常", e);
-        }
+           // log.error ("执行ZKLockEngine.getPrimaryDistLockInfo()异常", e);
 
-        return false;
+        }
+        return null;
     }
 
-    private String encodeZooKeeperPath (DistLockInfo lockInfo)
+    private String encodeZooKeeperPath (String lockKey)
     {
-        String originalStr = LOCK_PATH + File.separator + lockInfo.getLockKey ();
+        String originalStr = LOCK_PATH + File.separator + lockKey;
         String resultStr = originalStr;
         try
         {
-            resultStr = LOCK_PATH + File.separator + java.net.URLEncoder.encode (lockInfo.getLockKey (), ENCODING);
+            resultStr = LOCK_PATH + File.separator + java.net.URLEncoder.encode (lockKey, ENCODING);
         }
         catch (UnsupportedEncodingException e)
         {
@@ -104,10 +130,4 @@ public class ZKLockEngine implements ILockEngine
         return resultStr;
     }
 
-    @Override
-    public DistLockInfo getPrimaryDistLockInfo (String lockKey)
-    {
-
-        return null;
-    }
 }
