@@ -17,6 +17,10 @@ public class UserServiceForCall
         try
         {
             distLock.lock ();
+            distLock.lock ();
+            distLock.lock ();
+            distLock.lock ();
+            distLock.lock ();
             System.out.println ("开始--执行simple1 , 当前线程:" + Thread.currentThread ().getName ());
             Thread.sleep (1000 * 30);
         }
@@ -89,7 +93,7 @@ public class UserServiceForCall
             
             distLock.lock ();
             System.out.println ("开始--执行method2 , 当前线程:" + Thread.currentThread ().getName ());
-            Thread.sleep (1000*20);
+            Thread.sleep (1000*1);
         }
         catch (InterruptedException e)
         {

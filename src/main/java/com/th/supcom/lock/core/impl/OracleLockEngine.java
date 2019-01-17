@@ -1,14 +1,12 @@
 package com.th.supcom.lock.core.impl;
 
- 
 import org.springframework.stereotype.Service;
 import com.th.supcom.lock.core.DistLockInfo;
 import com.th.supcom.lock.core.ILockEngine;
- 
 
 /**
  * 
- * @function 锁引擎-Zookeeper实现 
+ * @function 锁引擎-Zookeeper实现
  * @date 2019年1月16日 下午2:49:24
  * @author 李桥
  * @version 1.0
@@ -16,7 +14,6 @@ import com.th.supcom.lock.core.ILockEngine;
 @Service
 public class OracleLockEngine implements ILockEngine
 {
-    
 
     @Override
     public boolean acquire (DistLockInfo lockInfo)
@@ -30,4 +27,10 @@ public class OracleLockEngine implements ILockEngine
         return false;
     }
 
+    @Override
+    public DistLockInfo getPrimaryDistLockInfo (String lockKey)
+    {
+
+        return null;
+    }
 }

@@ -14,18 +14,19 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 public class LockTemplate
 {
-    private static long TRY_LOCK_INTERVAL=50;
+    private static long TRY_LOCK_INTERVAL=500;
     
     private ILockEngine lockExecutor;
 
-    public DistLockInfo lock (String key, long expire, long timeout)
+    public DistLockInfo lock (DistLockInfo lockInfo)
     {
-        Assert.isTrue (timeout > 0, "tryTimeout must more than 0");
+        Assert.isTrue (lockInfo.getAcquireTimeout () > 0, "tryTimeout must more than 0");
         long start = System.currentTimeMillis ();
         int acquireCount = 0;
         String lockValue = LockUtil.getLockValue ();
-        DistLockInfo lockInfo = new DistLockInfo (key, lockValue, expire, timeout, acquireCount, null);
-        while (System.currentTimeMillis () - start < timeout)
+        lockInfo.setLockValue (lockValue);
+      
+        while (System.currentTimeMillis () - start < lockInfo.getAcquireTimeout ())
         {
             lockInfo.setAcquireCount (acquireCount);
             lockInfo.setCreateDate (new Date ());
@@ -33,7 +34,7 @@ public class LockTemplate
             if (result)
             {
                 log.info ("lock success, at times:{} ,subject:{}", acquireCount, lockValue);
-                return new DistLockInfo (key, lockValue, expire, timeout, acquireCount, new Date ());
+                return lockInfo;
             }
             acquireCount++;
             try

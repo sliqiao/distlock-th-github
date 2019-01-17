@@ -18,7 +18,8 @@ import lombok.extern.slf4j.Slf4j;
  * <p>
  * D:\runtime\zookeeper-3.5.4-beta\zookeeper-3.5.4-beta\bin\启动.cmd
  * 这是本地安装的zookeeper服务,客户端使用D:\runtime\zookeeper-3.5.4-beta\zookeeper-3.5.4-beta\
- * bin\zktools\zktools.exe ,开发环境连接地址：10.0.2.190:2181
+ * bin\zktools\zktools.exe
+ * ,开发环境连接地址：10.0.2.190:2181
  * </p>
  * 
  * @function 锁引擎-Zookeeper实现
@@ -28,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Slf4j
-public class ZKLockEngine implements ILockEngine
+public class ZKLockEngine_备份 implements ILockEngine
 {
     @Autowired
     private CuratorFramework zkClient;
@@ -36,23 +37,37 @@ public class ZKLockEngine implements ILockEngine
     private static final String LOCK_PATH = "/distlock";
     private static final String ENCODING = "utf-8";
 
+    private static final ThreadLocal <InterProcessMutex> InterProcessMutex = new ThreadLocal <InterProcessMutex> ();
+
+    private static InterProcessMutex getInterProcessMutex ()
+    {
+        return InterProcessMutex.get ();
+    }
+
+    private static void setInterProcessMutex (InterProcessMutex interProcessMutex)
+    {
+        InterProcessMutex.set (interProcessMutex);
+    }
+    private static void clearInterProcessMutex ()
+    {
+        InterProcessMutex.remove ();
+    }
+
     @Override
     public boolean acquire (DistLockInfo lockInfo)
     {
-        // 不是可重入锁，容易引起死锁
-        InterProcessMutex oldzkInterProcessMutex = lockInfo.getZkInterProcessMutex ();
-        if (oldzkInterProcessMutex != null && oldzkInterProcessMutex.isAcquiredInThisProcess ()
-            && oldzkInterProcessMutex.isOwnedByCurrentThread ())
-        {
+        
+        String encodeZooKeeperPath = encodeZooKeeperPath (lockInfo);
+        InterProcessMutex lock = new InterProcessMutex (zkClient, encodeZooKeeperPath);
+        if(lock.isAcquiredInThisProcess ()&&lock.isOwnedByCurrentThread ()){
             log.warn ("该subject又过来获取这把可重入锁了，{}",lockInfo);
             return true;
         }
-        String encodeZooKeeperPath = encodeZooKeeperPath (lockInfo);
-        InterProcessMutex zkInterProcessMutex = new InterProcessMutex (zkClient, encodeZooKeeperPath);
-        lockInfo.setZkInterProcessMutex (zkInterProcessMutex);
+    
         try
         {
-            return zkInterProcessMutex.acquire (2000, TimeUnit.MILLISECONDS);
+            ZKLockEngine_备份.setInterProcessMutex (lock);
+            return lock.acquire (200, TimeUnit.MILLISECONDS);
         }
         catch (Exception e)
         {
@@ -65,25 +80,21 @@ public class ZKLockEngine implements ILockEngine
     @Override
     public boolean releaseLock (DistLockInfo lockInfo)
     {
-        InterProcessMutex lock = lockInfo.getZkInterProcessMutex ();
+        InterProcessMutex lock = getInterProcessMutex ();
         if (null == lock)
         {
             return true;
         }
         try
         {
-            if (lock.isAcquiredInThisProcess () && lock.isOwnedByCurrentThread ())
-            {
-                lock.release ();
-                lockInfo.setZkInterProcessMutex (null);
-                return true;
-            }
-            log.error ("执行ZKLockEngine.releaseLock()失败，当前InterProcessMutex的owner不是当前线程！");
-
+            lock.release ();
+            return true;
         }
         catch (Exception e)
         {
             log.error ("执行ZKLockEngine.releaseLock()异常", e);
+        }finally{
+            ZKLockEngine_备份.clearInterProcessMutex ();
         }
 
         return false;
@@ -103,7 +114,6 @@ public class ZKLockEngine implements ILockEngine
         }
         return resultStr;
     }
-
     @Override
     public DistLockInfo getPrimaryDistLockInfo (String lockKey)
     {

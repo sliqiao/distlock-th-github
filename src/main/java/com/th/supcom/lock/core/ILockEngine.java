@@ -1,21 +1,19 @@
- 
+
 package com.th.supcom.lock.core;
 
- 
-
- 
-public interface ILockEngine {
+public interface ILockEngine
+{
 
     /**
      * 加锁
      *
-     * @param lockKey     锁标识
-     * @param lockValue   锁值
-     * @param acquireExpire  到期时间 毫秒
+     * @param lockKey 锁标识
+     * @param lockValue 锁值
+     * @param acquireExpire 到期时间 毫秒
      * @throws Exception
      * @return 锁信息
      */
-    boolean acquire(DistLockInfo lockInfo);
+    boolean acquire (DistLockInfo lockInfo);
 
     /**
      * 解锁
@@ -29,6 +27,15 @@ public interface ILockEngine {
      * @param lockInfo 获取锁返回的对象
      * @return 是否释放成功
      */
-    boolean releaseLock(DistLockInfo lockInfo);
+    boolean releaseLock (DistLockInfo lockInfo);
+
+    /**
+     * 
+     * @function 在共享存储中间件中获取分布式锁信息
+     * @date 2019年1月17日 下午2:20:55
+     * @author 李桥
+     * @version 1.0
+     */
+    DistLockInfo getPrimaryDistLockInfo (String lockKey);
 
 }

@@ -3,6 +3,8 @@ package com.th.supcom.lock.core;
 
 import java.util.Date;
 
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
+
 import com.th.supcom.lock.util.LockUtil;
 import com.th.supcom.lock.util.SpringContextUtil;
 
@@ -52,14 +54,14 @@ public class DistLockInfo implements IDistLock
      */
     private Date createDate;
 
-    
+    private InterProcessMutex zkInterProcessMutex=null;
     @Override
     public boolean lock (Long expire, Long timeout)
     {
         this.setExpire (expire);
         this.setAcquireTimeout (timeout);
         LockTemplate  lockTemplate =SpringContextUtil.getBean (LockTemplate.class);
-        return  null!=lockTemplate.lock (this.getLockKey (), expire, timeout);
+        return  null!=lockTemplate.lock (this);
     }
 
     @Override
@@ -85,4 +87,14 @@ public class DistLockInfo implements IDistLock
         distLock.setLockValue (LockUtil.getLockValue ());
         return distLock;
     }
+
+    public DistLockInfo (String lockKey, Long expire, Long acquireTimeout)
+    {
+        super ();
+        this.lockKey = lockKey;
+        this.expire = expire;
+        this.acquireTimeout = acquireTimeout;
+    }
+    
+    
 }

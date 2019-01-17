@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.th.supcom.lock.core.DistLockInfo;
 import com.th.supcom.lock.core.ILockEngine;
+import com.th.supcom.lock.core.LockEngineHelper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,8 +33,13 @@ public class MysqlLockEngine implements ILockEngine
     public boolean acquire (DistLockInfo lockInfo)
     {
         String lockKey = lockInfo.getLockKey ();
-        if (null != getPrimaryDistLockInfo (lockKey))
+        DistLockInfo primaryDistLockInfo = getPrimaryDistLockInfo (lockKey);
+        if (null !=primaryDistLockInfo )
         {
+            if(LockEngineHelper.isMySelf (lockInfo, primaryDistLockInfo)){
+                log.warn ("该subject又过来获取这把可重入锁了，{}",lockInfo);
+                return true;
+            }
             return false;
 
         }
@@ -90,8 +96,9 @@ public class MysqlLockEngine implements ILockEngine
         }
 
     }
-
-    private DistLockInfo getPrimaryDistLockInfo (String lockKey)
+    @Override
+    
+    public   DistLockInfo getPrimaryDistLockInfo (String lockKey)
     {
         List <DistLockInfo> resultList = jdbcTemplate.query ("select * from t_distlock_info where lock_key=?",
                                                              new DistLockInfoRowMapper (), lockKey);

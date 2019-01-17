@@ -79,7 +79,8 @@ public class LockAnnotationAdvisor extends AbstractPointcutAdvisor implements Be
                 if(lock4j==null){
                     return invocation.proceed();    
                 }
-                lockInfo = lockTemplate.lock(lockKey, lock4j.expire(), lock4j.timeout());
+                
+                lockInfo = lockTemplate.lock(new DistLockInfo(lockKey, lock4j.expire(), lock4j.timeout()));
                 if (null != lockInfo) {
                     return invocation.proceed();
                 }

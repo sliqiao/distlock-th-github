@@ -9,7 +9,7 @@ datasource:
         password: 123456
         driverClassName: com.mysql.jdbc.Driver
 zk:
-  url: 127.0.0.1:2181
+  url: 10.0.2.190:2181
   timeout: 1000
   retry: 3
 distlock:
