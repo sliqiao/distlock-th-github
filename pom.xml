@@ -68,6 +68,14 @@
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		<!-- curator 版本4.1.0 对应 zookeeper 版本 3.5.x -->
+		<!-- curator 与 zookeeper 版本对应关系：https://curator.apache.org/zk-compatibility.html -->
+		<dependency>
+			<groupId>org.apache.curator</groupId>
+			<artifactId>curator-recipes</artifactId>
+			<version>4.1.0</version>
+		</dependency>
+	 
 	</dependencies>
 
 	<build>

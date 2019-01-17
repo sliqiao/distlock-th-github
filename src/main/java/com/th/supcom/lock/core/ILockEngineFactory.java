@@ -52,7 +52,7 @@ public class ILockEngineFactory
 
     public ILockEngine getDefaultInstance ()
     {
-        return mysqlLockEngine;
+        return zkLockEngine;
     }
 
     public static enum ILockEngineType

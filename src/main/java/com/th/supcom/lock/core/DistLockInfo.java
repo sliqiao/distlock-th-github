@@ -52,6 +52,7 @@ public class DistLockInfo implements IDistLock
      */
     private Date createDate;
 
+    
     @Override
     public boolean lock (Long expire, Long timeout)
     {

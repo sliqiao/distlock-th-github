@@ -83,7 +83,7 @@ public class UserServiceForCall
     public User method2 (User user)
     {
      
-        IDistLock distLock = DistLockInfo.newLock (user.getId ()+"");
+        IDistLock distLock = DistLockInfo.newLock ("method2");
         try
         {
             
