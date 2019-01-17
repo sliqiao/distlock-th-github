@@ -19,7 +19,7 @@ import java.util.Enumeration;
  */
 public class LockUtil
 {
-    public static final long DEFAULT_TIMEOUT = 50 * 1000;
+    public static final long DEFAULT_TIMEOUT = 30 * 1000;
     public static final long DEFAULT_EXPIRE = 300 * 1000;
     private static final String DEFAULT_DELIMITER="-";
     private static final String PROCESS_ID = LockUtil.getLocalIpByNetcard () + DEFAULT_DELIMITER + LockUtil.getJvmPid ();

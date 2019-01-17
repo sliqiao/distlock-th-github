@@ -9,13 +9,13 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 @Configuration
-@EnableConfigurationProperties (ZKProperties.class)
+@EnableConfigurationProperties (ZKPros.class)
 public class ZKConfig
 {
-    private final ZKProperties zkProperties;
+    private final ZKPros zkProperties;
 
     @Autowired
-    public ZKConfig (ZKProperties ZKProperties)
+    public ZKConfig (ZKPros ZKProperties)
     {
         this.zkProperties = ZKProperties;
     }

@@ -31,10 +31,10 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Configuration
-public class LockAutoConfiguration
+public class LockAutoConfig
 {
     @Autowired
-    private MyDatabaseProperties multipleDatabaseProperties;
+    private DBPros multipleDatabaseProperties;
 
     @Autowired (required = false)
     public void setRedisTemplate (RedisTemplate redisTemplate)
@@ -75,7 +75,7 @@ public class LockAutoConfiguration
 
     @Bean (name = "myDataSource")
     @Primary
-    public DataSource myDataSource (MyDatabaseProperties myDatabaseProperties)
+    public DataSource myDataSource (DBPros myDatabaseProperties)
     {
 
         DruidDataSource dataSource = new DruidDataSource ();

@@ -12,7 +12,7 @@ public class UserServiceForAnnotation {
     public void simple1() {
         System.out.println("开始--执行简单方法1 , 当前线程:" + Thread.currentThread().getName());
         try {
-            Thread.sleep(1000*30);
+            Thread.sleep(1000*10);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

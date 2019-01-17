@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "datasource")
 @Component
 @Data
-public class MyDatabaseProperties {
+public class DBPros {
 
     DataSourceProperties myDataSource = new DataSourceProperties();
 
