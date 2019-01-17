@@ -47,6 +47,7 @@ public class ZKLockEngine implements ILockEngine
             if (LockEngineHelper.isMySelf (lockInfo, primaryDistLockInfo))
             {
                 log.warn ("该subject又过来获取这把可重入锁了，{}", lockInfo);
+                DistLockInfo.addReentrantCount ();
                 return true;
             }
             return false;
@@ -54,9 +55,11 @@ public class ZKLockEngine implements ILockEngine
         }
         try
         {
+
             String encodeZooKeeperPath = encodeZooKeeperPath (lockInfo.getLockKey ());
             zkClient.create ().creatingParentsIfNeeded ().withMode (CreateMode.EPHEMERAL)
                     .forPath (encodeZooKeeperPath, lockInfo.getLockValue ().getBytes ());
+            DistLockInfo.addReentrantCount ();
             return true;
         }
         catch (Exception e)
@@ -79,9 +82,16 @@ public class ZKLockEngine implements ILockEngine
 
         if (LockEngineHelper.isMySelf (lockInfo, primaryDistLockInfo))
         {
+            if (DistLockInfo.getReentrantCount () > 1)
+            {
+                log.info ("当前锁是一把可重入锁，此时，并不释放锁，处于重入层次:{}", DistLockInfo.getReentrantCount ());
+                DistLockInfo.subReentrantCount ();
+                return false;
+            }
             try
             {
                 zkClient.delete ().forPath (encodeZooKeeperPath);
+                DistLockInfo.clearReentrantCount ();
                 return true;
             }
             catch (Exception e)
@@ -109,7 +119,7 @@ public class ZKLockEngine implements ILockEngine
         }
         catch (Exception e)
         {
-           // log.error ("执行ZKLockEngine.getPrimaryDistLockInfo()异常", e);
+            // log.error ("执行ZKLockEngine.getPrimaryDistLockInfo()异常", e);
 
         }
         return null;

@@ -2,6 +2,7 @@
 package com.th.supcom.lock.core;
 
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 
@@ -24,7 +25,37 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DistLockInfo implements IDistLock
 {
+    private static final ThreadLocal <AtomicInteger> reentrantCount = new ThreadLocal <AtomicInteger> ()
+    {
 
+        @Override
+        protected AtomicInteger initialValue ()
+        {
+            return new AtomicInteger (0);
+        }
+
+    };
+
+    public static int getReentrantCount ()
+    {
+        return reentrantCount.get ().get ();
+    }
+
+    public static void addReentrantCount ()
+    {
+        reentrantCount.get ().incrementAndGet ();
+
+    }
+    public static void subReentrantCount ()
+    {
+        reentrantCount.get ().decrementAndGet ();
+
+    }
+    public static void clearReentrantCount ()
+    {
+        reentrantCount.remove ();
+
+    }
     /**
      * 锁名称
      */
@@ -54,14 +85,15 @@ public class DistLockInfo implements IDistLock
      */
     private Date createDate;
 
-    private InterProcessMutex zkInterProcessMutex=null;
+    private InterProcessMutex zkInterProcessMutex = null;
+
     @Override
     public boolean lock (Long expire, Long timeout)
     {
         this.setExpire (expire);
         this.setAcquireTimeout (timeout);
-        LockTemplate  lockTemplate =SpringContextUtil.getBean (LockTemplate.class);
-        return  null!=lockTemplate.lock (this);
+        LockTemplate lockTemplate = SpringContextUtil.getBean (LockTemplate.class);
+        return null != lockTemplate.lock (this);
     }
 
     @Override
@@ -74,7 +106,7 @@ public class DistLockInfo implements IDistLock
     @Override
     public boolean unlock ()
     {
-        LockTemplate  lockTemplate =SpringContextUtil.getBean (LockTemplate.class);
+        LockTemplate lockTemplate = SpringContextUtil.getBean (LockTemplate.class);
         return lockTemplate.releaseLock (this);
 
     }
@@ -82,7 +114,7 @@ public class DistLockInfo implements IDistLock
     public static IDistLock newLock (String lockKey)
     {
         DistLockInfo distLock = new DistLockInfo ();
-        distLock.setCreateDate (new Date());
+        distLock.setCreateDate (new Date ());
         distLock.setLockKey (lockKey);
         distLock.setLockValue (LockUtil.getLockValue ());
         return distLock;
@@ -95,6 +127,5 @@ public class DistLockInfo implements IDistLock
         this.expire = expire;
         this.acquireTimeout = acquireTimeout;
     }
-    
-    
+
 }
