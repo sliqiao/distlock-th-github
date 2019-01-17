@@ -14,8 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 public class LockTemplate
 {
 
-    private static final String DEFAULT_DELIMITER="-";
-    private static final String PROCESS_ID = LockUtil.getLocalIpByNetcard () + DEFAULT_DELIMITER + LockUtil.getJvmPid ();
+    
+   
 
     @Setter
     private ILockEngine lockExecutor;
@@ -25,7 +25,7 @@ public class LockTemplate
         Assert.isTrue (timeout > 0, "tryTimeout must more than 0");
         long start = System.currentTimeMillis ();
         int acquireCount = 0;
-        String lockValue = PROCESS_ID + DEFAULT_DELIMITER + Thread.currentThread ().getId ();
+        String lockValue =LockUtil.getLockValue ();
         DistLockInfo lockInfo=new DistLockInfo (key, lockValue, expire, timeout, acquireCount,null);
         while (System.currentTimeMillis () - start < timeout)
         {

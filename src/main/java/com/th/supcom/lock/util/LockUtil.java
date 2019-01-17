@@ -19,7 +19,10 @@ import java.util.Enumeration;
  */
 public class LockUtil
 {
-
+    public static final long DEFAULT_TIMEOUT = 50 * 1000;
+    public static final long DEFAULT_EXPIRE = 300 * 1000;
+    private static final String DEFAULT_DELIMITER="-";
+    private static final String PROCESS_ID = LockUtil.getLocalIpByNetcard () + DEFAULT_DELIMITER + LockUtil.getJvmPid ();
     public static String getJvmPid ()
     {
         String pid = ManagementFactory.getRuntimeMXBean ().getName ();
@@ -58,6 +61,12 @@ public class LockUtil
         {
             throw new RuntimeException (e);
         }
+    }
+    
+    
+    public static String getLockValue(){
+        String lockValue = PROCESS_ID + DEFAULT_DELIMITER + Thread.currentThread ().getId ();
+        return lockValue;
     }
 
 }

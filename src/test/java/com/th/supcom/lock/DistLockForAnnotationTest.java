@@ -16,21 +16,21 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.th.supcom.lock.model.User;
-import com.th.supcom.lock.service.UserService;
+import com.th.supcom.lock.service.UserServiceForAnnotation;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = SpringBootLockTest.class)
+@SpringBootTest(classes = DistLockForAnnotationTest.class)
 @SpringBootApplication
 @EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
-public class SpringBootLockTest {
+public class DistLockForAnnotationTest {
 
     private static final Random RANDOM = new Random();
 
     @Autowired
-    UserService userService;
+    UserServiceForAnnotation userService;
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringBootLockTest.class, args);
+        SpringApplication.run(DistLockForAnnotationTest.class, args);
     }
 
     @Test

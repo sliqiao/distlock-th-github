@@ -6,7 +6,7 @@ import com.th.supcom.lock.annotation.DistLock;
 import com.th.supcom.lock.model.User;
 
 @Service
-public class UserService {
+public class UserServiceForAnnotation {
 
     @DistLock
     public void simple1() {

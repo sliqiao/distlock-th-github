@@ -2,6 +2,7 @@
 package com.th.supcom.lock.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 
 import com.th.supcom.lock.core.impl.MysqlLockEngine;
@@ -17,7 +18,7 @@ import com.th.supcom.lock.core.impl.ZKLockEngine;
  * @version 1.0
  */
 @Service
-public class ILockEngineFactory
+public class ILockEngineFactory 
 {
     @Autowired
     private RedisLockEngine redisLockEngine;
@@ -58,4 +59,6 @@ public class ILockEngineFactory
     {
      Redis, Mysql, Oracle, Zookeeper;
     }
+    
+    
 }

@@ -6,6 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.th.supcom.lock.util.LockUtil;
+
 /**
  * 
  * @function 分布式锁注解
@@ -33,7 +35,7 @@ public @interface DistLock
      * 最好是，谁获取锁，谁释放锁，由调用者来控制，系统按照一个合理的expire来回收锁！
      * <p>
      */
-    long expire() default 300 * 1000;
+    long expire() default LockUtil.DEFAULT_EXPIRE;
 
     /**
      * 获取锁超时时间 单位：毫秒
@@ -42,6 +44,8 @@ public @interface DistLock
      *     结合业务,建议该时间不宜设置过长,特别在并发高的情况下.
      * </pre>
      */
-    long timeout() default 50 * 1000;
+    long timeout() default LockUtil.DEFAULT_TIMEOUT;
+    
+    
 
 }
