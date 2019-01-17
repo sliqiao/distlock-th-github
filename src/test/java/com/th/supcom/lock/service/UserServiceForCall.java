@@ -10,7 +10,7 @@ import com.th.supcom.lock.model.User;
 public class UserServiceForCall
 {
 
-    public void simple11 ()
+    public void recursionCall ()
     {
    
         IDistLock distLock = DistLockInfo.newLock ("simple1");

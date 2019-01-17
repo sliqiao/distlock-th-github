@@ -55,7 +55,7 @@ public class LockForCallTest {
         Runnable task = new Runnable() {
             public void run() {
                 try {
-                    userService.simple11();
+                    userService.recursionCall();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
