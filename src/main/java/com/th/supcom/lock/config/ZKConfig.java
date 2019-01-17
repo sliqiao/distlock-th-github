@@ -9,22 +9,22 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 @Configuration
-@EnableConfigurationProperties (ZkProps.class)
+@EnableConfigurationProperties (ZKProperties.class)
 public class ZKConfig
 {
-    private final ZkProps zkProps;
+    private final ZKProperties zkProperties;
 
     @Autowired
-    public ZKConfig (ZkProps zkProps)
+    public ZKConfig (ZKProperties ZKProperties)
     {
-        this.zkProps = zkProps;
+        this.zkProperties = ZKProperties;
     }
 
     @Bean
     public CuratorFramework curatorFramework ()
     {
-        RetryPolicy retryPolicy = new ExponentialBackoffRetry (zkProps.getTimeout (), zkProps.getRetry ());
-        CuratorFramework client = CuratorFrameworkFactory.newClient (zkProps.getUrl (), retryPolicy);
+        RetryPolicy retryPolicy = new ExponentialBackoffRetry (zkProperties.getTimeout (), zkProperties.getRetry ());
+        CuratorFramework client = CuratorFrameworkFactory.newClient (zkProperties.getUrl (), retryPolicy);
         client.start ();
         return client;
     }

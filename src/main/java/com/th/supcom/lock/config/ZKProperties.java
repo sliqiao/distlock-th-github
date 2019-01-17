@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @ConfigurationProperties (prefix = "zk")
-public class ZkProps
+public class ZKProperties
 {
     /**
      * 连接地址

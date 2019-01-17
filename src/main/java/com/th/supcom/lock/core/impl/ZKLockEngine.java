@@ -57,7 +57,7 @@ public class ZKLockEngine implements ILockEngine
         try
         {
             setInterProcessMutex (lock);
-            return lock.acquire (100, TimeUnit.MILLISECONDS);
+            return lock.acquire (1000, TimeUnit.MILLISECONDS);
         }
         catch (Exception e)
         {
